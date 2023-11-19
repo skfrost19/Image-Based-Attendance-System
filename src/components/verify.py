@@ -41,13 +41,17 @@ def verify_faces_concurrently(test_faces: list, db_faces: list) -> dict:
     """
     try:
         logging.info("Verifying faces concurrently")
+        
         # Use multiprocessing to verify faces concurrently
         with multiprocessing.Pool() as pool:
             face_pairs = [(test_face, db_face) for test_face in test_faces for db_face in db_faces]
             results = pool.map(verify_face_pair, face_pairs)
+
         # Combine test_faces, db_faces, and results into a dictionary
         verified_faces = {f"{test_face}-{db_face}": result for ((test_face, db_face), result) in zip(face_pairs, results)}
+        
         return verified_faces
+    
     except Exception as e:
         logging.error(f"Error in verify_faces_concurrently: {e}")
         raise CustomException(e, sys)
