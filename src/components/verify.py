@@ -1,7 +1,8 @@
 from deepface import DeepFace
-import time
 from src.logger import logging
 from src.exception import CustomException
+import sys
+import multiprocessing
 import sys
 
 def verify_face(face_1: str, face_2: str) -> bool:
@@ -21,6 +22,16 @@ def verify_face(face_1: str, face_2: str) -> bool:
         raise CustomException(e, sys)
     
 
+
+def verify_face_pair(face_pair):
+    """
+    Verifies if the two faces in the face_pair are the same person
+    :param face_pair: Tuple of paths to a test face and a database face
+    :return: Boolean indicating whether the two faces match
+    """
+    test_face, db_face = face_pair
+    return verify_face(test_face, db_face)
+
 def verify_faces_concurrently(test_faces: list, db_faces: list) -> dict:
     """
     Verifies if the faces in test_faces are the same person as the faces in db_faces
@@ -30,19 +41,14 @@ def verify_faces_concurrently(test_faces: list, db_faces: list) -> dict:
     """
     try:
         logging.info("Verifying faces concurrently")
-        # keys will be name of db_faces (excluding the path and extension)
-        verified_faces = {}.fromkeys([face.split("\\")[-1].split(".")[0] for face in db_faces], False)
-
-        start = time.time()
-        # implementing without threading
-        for face in test_faces:
-            for db_face in db_faces:
-                verified_faces[db_face.split("\\")[-1].split(".")[0]] = verify_face(face, db_face)
-        end = time.time()
-
-        logging.info(f"Time taken: {end-start}")
+        # Use multiprocessing to verify faces concurrently
+        with multiprocessing.Pool() as pool:
+            face_pairs = [(test_face, db_face) for test_face in test_faces for db_face in db_faces]
+            results = pool.map(verify_face_pair, face_pairs)
+        # Combine test_faces, db_faces, and results into a dictionary
+        verified_faces = {f"{test_face}-{db_face}": result for ((test_face, db_face), result) in zip(face_pairs, results)}
         return verified_faces
-        
     except Exception as e:
         logging.error(f"Error in verify_faces_concurrently: {e}")
         raise CustomException(e, sys)
+        
