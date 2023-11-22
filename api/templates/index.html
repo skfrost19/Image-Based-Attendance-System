@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <!-- Include Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+        <h1 align="center">Image Based Attendance System</h1>
+        <br><br>
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Section for uploading and previewing the image -->
+                <div class="col">
+                    <h2>Upload and Preview Image</h2>
+                    <input type="file" id="imageUpload" accept="image/*">
+                    <button onclick="uploadImage()">Upload Image</button>
+                    <img id="imagePreview" src="#" alt="Image Preview" style="display: none;">
+                </div>
+
+                <!-- Section for previewing and downloading the CSV file -->
+                <div class="col">
+                    <h2>Preview and Download CSV</h2>
+                    <button onclick="downloadCSV()">Download CSV</button>
+                    <div id="csvPreview"></div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function uploadImage() {
+                const fileInput = document.getElementById('imageUpload');
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+    
+                fetch('/upload-image', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => console.log(data))
+                .catch(error => console.error(error));
+            }
+    
+            function downloadCSV() {
+                window.location.href = '/download-csv';
+            }
+        </script>
+    </body>
+</html>
