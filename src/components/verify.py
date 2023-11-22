@@ -14,7 +14,7 @@ def verify_face(face_1: str, face_2: str) -> bool:
     """
     try:
         logging.info("Verifying faces")
-        result = DeepFace.verify(face_1, face_2, distance_metric='euclidean_l2', enforce_detection=False, model_name="Facenet512", align=False)
+        result = DeepFace.verify(face_1, face_2, distance_metric='euclidean_l2', enforce_detection=False, model_name="ArcFace", align=False)
         return result["verified"]
         
     except Exception as e:
