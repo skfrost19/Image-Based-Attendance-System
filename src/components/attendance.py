@@ -1,9 +1,3 @@
-# TODO
-# 1 - Will take present student names with date
-# 2 - Create a folder if not exists named attendance
-# 3 - In that folder a file named attendance.csv (columns = id, roll_number, name, date) { in that the id , name and roll numebr will be populated beforehand}
-# 4 - The script will open the file and append the data for each date (if not exists) on each run (if duplicate date then take union of new and old data and replace the column)
-
 import os
 import sys
 import pandas as pd

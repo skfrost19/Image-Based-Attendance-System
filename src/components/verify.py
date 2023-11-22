@@ -14,7 +14,7 @@ def verify_face(face_1: str, face_2: str) -> bool:
     """
     try:
         logging.info("Verifying faces")
-        result = DeepFace.verify(face_1, face_2, distance_metric='euclidean_l2', enforce_detection=False, model_name="Facenet512")
+        result = DeepFace.verify(face_1, face_2, distance_metric='euclidean_l2', enforce_detection=False, model_name="Facenet512", align=False)
         return result["verified"]
         
     except Exception as e:
@@ -47,12 +47,35 @@ def verify_faces_concurrently(test_faces: list, db_faces: list) -> dict:
             face_pairs = [(test_face, db_face) for test_face in test_faces for db_face in db_faces]
             results = pool.map(verify_face_pair, face_pairs)
 
-        # Combine test_faces, db_faces, and results into a dictionary
-        verified_faces = {f"{test_face}-{db_face}": result for ((test_face, db_face), result) in zip(face_pairs, results)}
+        # Combine test_faces, db_faces, and results into a dictionary {db_face}
+        verified_faces = {db_face.split('\\')[-1].split('.')[0]: result for ((test_face, db_face), result) in zip(face_pairs, results)}
         
         return verified_faces
     
     except Exception as e:
         logging.error(f"Error in verify_faces_concurrently: {e}")
+        raise CustomException(e, sys)
+    
+def verify_faces_sequentially(test_faces: list, db_faces: list) -> dict:
+    """
+    Verifies if the faces in test_faces are the same person as the faces in db_faces
+    :param test_faces: List of paths to faces to be tested
+    :param db_faces: List of paths to faces in the database
+    :return: Dictionary of verified faces
+    """
+    try:
+        logging.info("Verifying faces sequentially")
+        
+        # Verify faces sequentially
+        verified_faces = {}
+        for test_face in test_faces:
+            for db_face in db_faces:
+                if verify_face(test_face, db_face):
+                    verified_faces[db_face.split('\\')[-1].split('.')[0]] = True
+                    break
+        return verified_faces
+    
+    except Exception as e:
+        logging.error(f"Error in verify_faces_sequentially: {e}")
         raise CustomException(e, sys)
         

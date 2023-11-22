@@ -14,7 +14,7 @@ from datetime import datetime
 from src.logger import logging
 from src.exception import CustomException
 from src.components.generate import extract_faces
-from src.components.verify import verify_faces_concurrently
+from src.components.verify import verify_faces_concurrently, verify_faces_sequentially
 from src.utils import get_images_name
 from src.components.attendance import mark_attendance
 
@@ -48,13 +48,10 @@ def pipeline()->None:
         db_faces = get_images_name(os.path.join(os.getcwd(), "records/MRH"))
 
         # Verify the faces
-        verified_faces = verify_faces_concurrently(faces, db_faces)
-
-        # Get the roll numbers of the verified faces
-        verified_roll_numbers = [face.split("-")[0] for face, verified in verified_faces.items() if verified]
+        verified_faces = verify_faces_sequentially(faces, db_faces)
 
         # Mark attendance
-        mark_attendance(verified_roll_numbers)
+        mark_attendance(list(verified_faces.keys()))
 
         logging.info("Pipeline completed successfully")
 
