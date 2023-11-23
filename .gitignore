@@ -2,3 +2,6 @@ models/
 logs/
 temp/
 __pycache__/
+dist/
+build/
+ivp_project.egg-info/
