@@ -1,7 +1,0 @@
-threading for concurrency
-api endpoints
-update excel sheet after match or day update
-db operations
-
-
-last step: metrics and conclusion

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Image Based Attendance System</title>
+        <!-- Include Bootstrap CSS -->
+        <link
+            rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        />
+    </head>
+    <body>
+        <div class="container mt-5 d-flex flex-column align-items-center">
+            <div class="row w-100">
+                <div class="col">
+                    <h1 class="text-center mb-5">
+                        Image based attendance system
+                    </h1>
+                </div>
+            </div>
+            <div class="row w-100">
+                <!-- Section for uploading the image -->
+                <div class="col-md-6">
+                    <h2>Upload Image</h2>
+                    <input type="file" id="imageUpload" accept="image/*" />
+                    <button
+                        onclick="uploadImage()"
+                        class="btn btn-primary mb-3"
+                    >
+                        Upload Image
+                    </button>
+                    <div
+                        id="uploadSpinner"
+                        class="spinner-border text-primary"
+                        role="status"
+                        style="display: none"
+                    >
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <img
+                        id="imagePreview"
+                        src="#"
+                        alt="Image Preview"
+                        class="img-thumbnail"
+                        style="display: none"
+                    />
+                </div>
+                <!-- Section for previewing and downloading the CSV file -->
+                <div class="col-md-6">
+                    <h2 class="mb-3">Download CSV</h2>
+                    <button
+                        id="downloadCSV"
+                        disabled
+                        onclick="downloadCSV()"
+                        class="btn btn-success mb-3"
+                    >
+                        Download CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script>
+            function uploadImage() {
+                const fileInput = document.getElementById("imageUpload");
+                const formData = new FormData();
+                formData.append("file", fileInput.files[0]);
+
+                // Show the spinner
+                document.getElementById("uploadSpinner").style.display =
+                    "block";
+
+                fetch("/upload-image", {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then((response) => {
+                        // Hide the spinner
+                        document.getElementById("uploadSpinner").style.display =
+                            "none";
+
+                        if (response.status === 200) {
+                            document.getElementById(
+                                "downloadCSV"
+                            ).disabled = false;
+                        }
+                        return response.text();
+                    })
+                    .then((data) => console.log(data))
+                    .catch((error) => {
+                        // Hide the spinner
+                        document.getElementById("uploadSpinner").style.display =
+                            "none";
+                        console.error(error);
+                    });
+            }
+
+            function downloadCSV() {
+                window.location.href = "/download-csv";
+            }
+        </script>
+    </body>
+</html>

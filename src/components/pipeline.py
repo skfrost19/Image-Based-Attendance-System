@@ -1,13 +1,3 @@
-# TODO
-# 1.- Will take image
-# 2 - Extract faces
-# 3 - Save faces to folder
-# 4 - Get the faces
-# 5 - Get the database faces
-# 6 - Verify the faces
-# 7 - Get the roll numbers of the verified faces
-# 8 - Mark attendance
-
 import os
 import sys
 from datetime import datetime
@@ -19,28 +9,24 @@ from src.utils import get_images_name
 from src.components.attendance import mark_attendance
 
 
-def pipeline()->None:
+def pipeline(image_path: str) -> None:
     """
     Pipeline to perform face recognition
     :return: None
     """
     try:
         logging.info("Starting pipeline")
-
-        # Get the images
-        date = datetime.now().strftime("%d-%m-%Y")
-        # get image name (todays date.extension) 
-        image_path = os.path.join(os.getcwd(), "images", f"{date}.png")   
         # check if image exists
         if not os.path.exists(image_path):
             logging.error("Image does not exist")
             raise CustomException("Image does not exist", sys)
         logging.info(f"Image path: {image_path}")
-    
+
         # Extract faces from the images
         extract_faces(image_path)
 
-
+        # Get the date
+        date = datetime.now().strftime("%d-%m-%Y")
         # Get the faces
         faces = get_images_name(os.path.join(os.getcwd(), date))
 
